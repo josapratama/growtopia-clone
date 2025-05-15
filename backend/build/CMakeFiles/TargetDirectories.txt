@@ -1,0 +1,3 @@
+D:/coding/bu-aini/growtopia/backend/build/CMakeFiles/GrowtopiaServer.dir
+D:/coding/bu-aini/growtopia/backend/build/CMakeFiles/ALL_BUILD.dir
+D:/coding/bu-aini/growtopia/backend/build/CMakeFiles/ZERO_CHECK.dir

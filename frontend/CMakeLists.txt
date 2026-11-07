@@ -3,15 +3,20 @@ project(GrowtopiaApp)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Gunakan vcpkg toolchain file dengan path absolut
-set(CMAKE_TOOLCHAIN_FILE "D:/coding/bu-aini/growtopia/frontend/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+# Gunakan vcpkg toolchain file dengan relative path agar portable
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+endif()
+
+# Include directories
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Temukan paket yang diperlukan
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-# Add these new packages
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(cpprestsdk CONFIG REQUIRED)
 find_package(SFML COMPONENTS Graphics Window Network Audio System CONFIG REQUIRED)
@@ -50,8 +55,8 @@ target_link_libraries(GrowtopiaApp PRIVATE
     glfw
     glad::glad
     imgui::imgui
-    # Add these new libraries
     nlohmann_json::nlohmann_json
     cpprestsdk::cpprest
     SFML::Graphics SFML::Window SFML::Network SFML::Audio SFML::System
+    ws2_32
 )

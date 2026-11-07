@@ -19,7 +19,7 @@ void handleClient(SOCKET clientSocket) {
     
     while (true) {
         char buffer[1024] = {0};
-        int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+        int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
         
         if (bytesRead <= 0) {
             // Koneksi terputus
@@ -33,7 +33,7 @@ void handleClient(SOCKET clientSocket) {
         std::string data(buffer, bytesRead);
         std::cout << "[Server] Menerima: " << data << std::endl;
         
-        std::string response = processCommand(data, username, isLoggedIn);
+        std::string response = processCommand(data, username, isLoggedIn, clientSocket);
         
         send(clientSocket, response.c_str(), response.length(), 0);
     }

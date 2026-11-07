@@ -1,24 +1,20 @@
+# Build artifacts
+backend/build/
 frontend/build/
-frontend/build/GrowtopiaApp.dir/
 *.obj
 *.tlog
 *.lastbuildstate
-frontend/vcpkg/
-node_modules/
-.env
-frontend/build/
-frontend/build/GrowtopiaApp.dir/
-.vs/
-*.obj
-.vscode/
-*.tlog
 *.user
-*.lastbuildstate
-imgui.ini
-frontend/vcpkg/
-node_modules/
-.env
 .vs/
 .vscode/
-*.user
 imgui.ini
+
+# Dependencies
+node_modules/
+frontend/vcpkg/
+
+# Environment & logs
+.env
+*.log
+web/data/*.json
+!web/data/.gitkeep

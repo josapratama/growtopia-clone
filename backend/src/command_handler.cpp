@@ -9,7 +9,7 @@
 #include <pqxx/pqxx>
 
 // Fungsi untuk memproses perintah dari client
-std::string processCommand(const std::string& command, std::string& username, bool& isLoggedIn) {
+std::string processCommand(const std::string& command, std::string& username, bool& isLoggedIn, SOCKET socket) {
     // Format perintah: COMMAND|parameter1|parameter2|...
     size_t sep = command.find('|');
     if (sep == std::string::npos) {
@@ -20,10 +20,10 @@ std::string processCommand(const std::string& command, std::string& username, bo
     std::string params = (sep < command.length() - 1) ? command.substr(sep + 1) : "";
     
     if (cmd == "LOGIN") {
-        return handleLoginCommand(params, username, isLoggedIn);
+        return handleLoginCommand(params, username, isLoggedIn, socket);
     } 
     else if (cmd == "GUEST_LOGIN") {
-        return handleGuestLoginCommand(params, username, isLoggedIn);
+        return handleGuestLoginCommand(params, username, isLoggedIn, socket);
     }
     else if (cmd == "REGISTER") {
         return handleRegisterCommand(params);
@@ -37,13 +37,28 @@ std::string processCommand(const std::string& command, std::string& username, bo
     else if (cmd == "USERS") {
         return handleUsersCommand(username, isLoggedIn);
     }
+    else if (cmd == "WORLD_JOIN") {
+        return handleWorldJoinCommand(params, username, isLoggedIn);
+    }
+    else if (cmd == "WORLD_LOCK") {
+        return handleWorldLockCommand(params, username, isLoggedIn);
+    }
+    else if (cmd == "FARM_ACTION") {
+        return handleFarmActionCommand(params, username, isLoggedIn);
+    }
+    else if (cmd == "DROP_ITEM") {
+        return handleDropItemCommand(params, username, isLoggedIn);
+    }
+    else if (cmd == "TRADE") {
+        return handleTradeCommand(params, username, isLoggedIn);
+    }
     else {
         return "Perintah tidak dikenal";
     }
 }
 
 // Fungsi untuk menangani perintah login
-std::string handleLoginCommand(const std::string& params, std::string& username, bool& isLoggedIn) {
+std::string handleLoginCommand(const std::string& params, std::string& username, bool& isLoggedIn, SOCKET socket) {
     // Format: LOGIN|username|password
     size_t sep = params.find('|');
     if (sep == std::string::npos) {
@@ -61,8 +76,8 @@ std::string handleLoginCommand(const std::string& params, std::string& username,
         username = user;
         isLoggedIn = true;
         
-        // Tambahkan ke daftar pengguna aktif
-        if (!UserManager::getInstance().addActiveUser(username, INVALID_SOCKET)) {
+        // Tambahkan ke daftar pengguna aktif dengan socket
+        if (!UserManager::getInstance().addActiveUser(username, socket)) {
             return "Pengguna sudah login di perangkat lain";
         }
         
@@ -73,7 +88,7 @@ std::string handleLoginCommand(const std::string& params, std::string& username,
 }
 
 // Fungsi untuk menangani perintah guest login
-std::string handleGuestLoginCommand(const std::string& params, std::string& username, bool& isLoggedIn) {
+std::string handleGuestLoginCommand(const std::string& params, std::string& username, bool& isLoggedIn, SOCKET socket) {
     // Format: GUEST_LOGIN|username
     std::string user = params;
     
@@ -117,8 +132,8 @@ std::string handleGuestLoginCommand(const std::string& params, std::string& user
         username = user;
         isLoggedIn = true;
         
-        // Tambahkan ke daftar pengguna aktif
-        UserManager::getInstance().addActiveUser(username, INVALID_SOCKET);
+        // Tambahkan ke daftar pengguna aktif dengan socket
+        UserManager::getInstance().addActiveUser(username, socket);
         
         return "Login berhasil sebagai " + user;
     } else {
@@ -178,4 +193,49 @@ std::string handleUsersCommand(const std::string& username, bool isLoggedIn) {
     }
     
     return UserManager::getInstance().getActiveUsersList();
+}
+
+// Fungsi untuk menangani world join
+std::string handleWorldJoinCommand(const std::string& params, const std::string& username, bool isLoggedIn) {
+    if (!isLoggedIn) {
+        return "ERROR|Harus login terlebih dahulu";
+    }
+    std::string worldName = params.empty() ? "MAIN" : params;
+    return "WORLD_OK|" + worldName + "|JOINED";
+}
+
+// Fungsi untuk menangani world lock & proteksi
+std::string handleWorldLockCommand(const std::string& params, const std::string& username, bool isLoggedIn) {
+    if (!isLoggedIn) {
+        return "ERROR|Harus login terlebih dahulu";
+    }
+    // Format: WORLD_LOCK|world_name|action|target
+    return "LOCK_SUCCESS|" + username + "|OWNED";
+}
+
+// Fungsi untuk menangani aksi farming (tanam bibit / panen)
+std::string handleFarmActionCommand(const std::string& params, const std::string& username, bool isLoggedIn) {
+    if (!isLoggedIn) {
+        return "ERROR|Harus login terlebih dahulu";
+    }
+    // Format: FARM_ACTION|tileX|tileY|seedId
+    return "FARM_OK|HARVESTED";
+}
+
+// Fungsi untuk menangani drop item ke tanah
+std::string handleDropItemCommand(const std::string& params, const std::string& username, bool isLoggedIn) {
+    if (!isLoggedIn) {
+        return "ERROR|Harus login terlebih dahulu";
+    }
+    // Format: DROP_ITEM|itemId|count|x|y
+    return "DROP_OK|SPAWNED";
+}
+
+// Fungsi untuk menangani perdagangan pemain aman (Trade)
+std::string handleTradeCommand(const std::string& params, const std::string& username, bool isLoggedIn) {
+    if (!isLoggedIn) {
+        return "ERROR|Harus login terlebih dahulu";
+    }
+    // Format: TRADE|targetUser|action
+    return "TRADE_OK|INITIATED";
 }

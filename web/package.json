@@ -1,0 +1,14 @@
+{
+  "name": "growtopia-web-client",
+  "version": "1.0.0",
+  "description": "Growtopia HTML5 Canvas Web Client & WebSocket Bridge",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
+

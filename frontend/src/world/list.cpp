@@ -27,6 +27,7 @@ enum WorldCategory {
 bool renderWorldListPage(AppPage& currentPage) {
     // Jika sedang dalam tampilan world, render tampilan world
     if (inWorldView) {
+        currentPage = WORLD_VIEW;
         renderWorldView(currentPage);
         return true;
     }

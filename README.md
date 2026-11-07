@@ -1,0 +1,111 @@
+# Growtopia Clone (Desktop & Full Web Edition v2.0)
+
+Proyek remake/klon game **Growtopia** lengkap dengan dua platform:
+1. **Web Client (HTML5 Canvas + WebSockets)** — Dapat dimainkan langsung di web browser (PC/HP/Tablet) dengan fitur lengkap Growtopia (Farming, Splicing, World Lock, Trade, Wearables, dan Drops).
+2. **Desktop Client & Server (C++17/C++20)** — Native desktop client berbasis GLFW, Dear ImGui, SFML, dan PostgreSQL backend server.
+
+---
+
+## 🚀 Cara Menjalankan Web Client (HTML5 & Node.js WebSocket Server)
+
+Web Client dapat dijalankan sangat mudah tanpa perlu kompilasi C++ maupun setup vcpkg!
+
+### 1. Jalankan Web Server & WebSocket Bridge:
+```bash
+cd web
+npm install
+npm start
+```
+Buka browser di: **`http://localhost:8080`**
+
+### 2. Atau Buka Langsung (Standalone):
+Anda juga dapat langsung membuka file `web/index.html` di Google Chrome / browser apa pun untuk langsung bermain secara instan (offline fallback mode)!
+
+---
+
+## 🎮 Fitur-Fitur Lengkap yang Telah Diimplementasikan
+
+### 1. Sistem Pertanian & Kawin Silang Bibit (*Farming & Splicing System*)
+- **Penanaman Bibit:** Tanam Dirt Seed, Rock Seed, Cave Seed, Wood Seed, Lava Seed, dll. di atas tanah.
+- **Fase Pertumbuhan Pohon (3 Tahap Visual):**
+  1. *Sprout:* Tunas kecil hijau.
+  2. *Sapling:* Pohon muda dengan dedaunan sesuai warna jenis bibit.
+  3. *Mature Tree:* Pohon berbuah matang dengan efek kilauan (*sparkle*).
+- **Panen (*Harvesting*):** Memukul pohon matang menjatuhkan blok, bibit baru, dan Gems!
+- **Splicing (Kawin Silang Bibit):** Tanam bibit B di atas pohon bibit A untuk menghasilkan jenis tanaman baru:
+  - `Dirt Seed` + `Rock Seed` = **`Lava Seed`**
+  - `Dirt Seed` + `Cave Seed` = **`Door`**
+  - `Dirt Seed` + `Lava Seed` = **`Wood Seed`**
+  - `Wood Seed` + `Dirt Seed` = **`Platform Seed`**
+  - `Rock Seed` + `Wood Seed` = **`Brick Seed`**
+
+### 2. Sistem Kunci Dunia (*World Lock & Area Protection*)
+- **World Lock (WL):** Mengklaim kepemilikan seluruh world untuk Anda.
+- **Proteksi Anti-Grief:** Hanya pemilik dan pemain yang diberi izin yang dapat merusak/memasang blok di world yang dikunci.
+- **Manajemen Akses (`/access <nama>`):**
+  - Wrench pada World Lock untuk membuka dialog pengaturan.
+  - Memberikan atau mencabut izin bangun untuk pemain lain.
+  - Mengambil kembali World Lock (*Break Lock*).
+- **Indikator Visual:** Gembok emas dengan animasi kilauan dan banner status kepemilikan di HUD atas (`🔒 Locked by [Owner]` / `🔓 Public`).
+
+### 3. Sistem Drop Barang & Fisika Mengapung (*Item Drops & Physics*)
+- **Drop Barang:** Klik item di tas atau ketik `/drop <jumlah>` untuk melempar item/gems ke lantai world.
+- **Fisika Real-time:** Item yang dijatuhkan memantul secara natural dan mengapung (*bobbing effect*) di atas permukaan tanah.
+- **Auto-Pickup:** Pemain yang mendekati item otomatis mengambilnya dengan efek suara lonceng.
+
+### 4. Sistem Perdagangan Aman (*Secure 2-Step Trade System*)
+- Klik Wrench ke pemain lain untuk membuka jendela **Secure Trade**.
+- **Dua Sisi Penawaran:** Masukkan item dan jumlah Gems yang ingin ditukar.
+- **Keamanan 2 Langkah:**
+  1. *Accept Offer:* Kedua belah pihak mengunci penawaran (tidak bisa diubah mendadak).
+  2. *Confirm Trade (Hitung mundur 3 detik):* Mencegah trik penipuan (*scamming*).
+
+### 5. Karakter & Perlengkapan Kosmetik (*Wearables & Equipment*)
+- **Angel Wings (Sayap Malaikat):**
+  - Renders sayap malaikat putih bercahaya dengan animasi kepakan di punggung karakter.
+  - **Kemampuan Khusus:** Memberikan *Double Jump* dan efek *Slow Gliding* (meluncur perlahan saat menahan tombol Lompat).
+- **Royal Crown:** Mahkota emas megah bertabur permata merah di atas kepala.
+- **Royal Robe:** Jubah kerajaan berwarna ungu beludru dengan aksen emas.
+
+### 6. Toko Gems (*In-Game Store*)
+- Beli berbagai paket item menggunakan Gems hasil menambang:
+  - 🔒 **World Lock** (2,000 Gems)
+  - 🔐 **Small Lock** (50 Gems) & **Big Lock** (200 Gems)
+  - 🌱 **Basic Splicing Pack** (100 Gems)
+  - 🪽 **Angel Wings** (500 Gems)
+  - 👑 **Royal Outfit Pack** (600 Gems)
+
+### 7. Penyimpanan Dunia Permanen (*World Persistence*)
+- Setiap perubahan blok, penanaman pohon, kunci dunia, dan item yang dijatuhkan otomatis disimpan ke file `web/data/worlds.json` di server. Saat server direstart atau pemain masuk kembali, dunia tetap tersimpan utuh!
+
+---
+
+## ⌨️ Kontrol Permainan
+- `A` / `D` atau `Panah Kiri` / `Panah Kanan`: Bergerak kiri/kanan.
+- `W` / `Space` / `Panah Atas`: Melompat (atau meluncur perlahan jika memakai Angel Wings).
+- `1` s/d `9`: Memilih slot item tas / hotbar.
+- `Klik Kiri Mouse`: Memukul blok, menanam bibit, memasang gembok, atau menggunakan Wrench.
+- `Klik Slot Tas yang Terpilih`: Membuka menu aksi item (Drop / Wear / Info).
+- `Enter`: Masuk/keluar White Door atau mengetik chat.
+- Touch Controls: D-Pad virtual dan tombol aksi otomatis aktif pada layar sentuh.
+
+---
+
+## 🛠️ Native Desktop Client & Server (C++)
+
+### Backend Server (C++20):
+```bash
+cd backend
+docker compose up -d           # Menjalankan PostgreSQL
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake --build build --config Release
+./build/Release/GrowtopiaServer.exe
+```
+
+### Frontend Desktop (C++17):
+```bash
+cd frontend
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="./vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake --build build --config Release
+./build/Release/GrowtopiaApp.exe
+```

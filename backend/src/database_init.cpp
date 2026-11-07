@@ -23,16 +23,8 @@ bool initDatabase() {
         }
 
         if (tablesExist) {
-            std::cout << "[Database] Tabel-tabel sudah ada. Mereset database...\n";
-            // Drop semua tabel dalam urutan yang benar (memperhatikan foreign key constraints)
-            pqxx::work drop_txn(c);
-            drop_txn.exec("DROP TABLE IF EXISTS bans CASCADE");
-            drop_txn.exec("DROP TABLE IF EXISTS logs CASCADE");
-            drop_txn.exec("DROP TABLE IF EXISTS user_items CASCADE");
-            drop_txn.exec("DROP TABLE IF EXISTS worlds CASCADE");
-            drop_txn.exec("DROP TABLE IF EXISTS items CASCADE");
-            drop_txn.exec("DROP TABLE IF EXISTS users CASCADE");
-            drop_txn.commit();
+            std::cout << "[Database] Tabel database sudah tersedia. Melewati pembuatan ulang.\n";
+            return true;
         }
         
         // Buat transaksi baru untuk membuat tabel

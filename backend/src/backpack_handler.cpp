@@ -6,7 +6,7 @@
 // Fungsi untuk menyimpan backpack ke database
 bool saveBackpack(int userId, const nlohmann::json& items) {
     try {
-        pqxx::connection c(db::CONNECTION_STR);
+        pqxx::connection c(CONNECTION_STR);
         pqxx::work txn(c);
         
         // Hapus item yang ada di backpack user
@@ -36,7 +36,7 @@ nlohmann::json loadBackpack(int userId) {
     nlohmann::json backpack = nlohmann::json::object();
     
     try {
-        pqxx::connection c(db::CONNECTION_STR);
+        pqxx::connection c(CONNECTION_STR);
         pqxx::work txn(c);
         
         // Ambil semua item milik user
@@ -93,7 +93,7 @@ bool addItemToBackpack(int userId, int itemId, int count) {
     if (count <= 0) return false;
     
     try {
-        pqxx::connection c(db::CONNECTION_STR);
+        pqxx::connection c(CONNECTION_STR);
         pqxx::work txn(c);
         
         // Periksa apakah item sudah ada di backpack
@@ -127,7 +127,7 @@ bool removeItemFromBackpack(int userId, int itemId, int count) {
     if (count <= 0) return false;
     
     try {
-        pqxx::connection c(db::CONNECTION_STR);
+        pqxx::connection c(CONNECTION_STR);
         pqxx::work txn(c);
         
         // Periksa jumlah item yang dimiliki

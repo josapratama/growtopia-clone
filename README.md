@@ -1,8 +1,25 @@
 # Growtopia Clone (Desktop & Full Web Edition v2.0)
 
-Proyek remake/klon game **Growtopia** lengkap dengan dua platform:
-1. **Web Client (HTML5 Canvas + WebSockets)** — Dapat dimainkan langsung di web browser (PC/HP/Tablet) dengan fitur lengkap Growtopia (Farming, Splicing, World Lock, Trade, Wearables, dan Drops).
-2. **Desktop Client & Server (C++17/C++20)** — Native desktop client berbasis GLFW, Dear ImGui, SFML, dan PostgreSQL backend server.
+Proyek remake/klon game **Growtopia** lengkap dengan platform multi-layer:
+1. **Authoritative 20Hz Netcode Engine (`/netcode-engine`)** — Engine jaringan multiplayer real-time tingkat industri dengan Client-Side Prediction (CSP), Server Reconciliation, dan Entity Linear Interpolation (LERP).
+2. **Web Client (HTML5 Canvas + WebSockets)** — Dapat dimainkan langsung di web browser (PC/HP/Tablet) dengan fitur lengkap Growtopia (Farming, Splicing, World Lock, Trade, Wearables, dan Drops).
+3. **Desktop Client & Server (C++17/C++20)** — Native desktop client berbasis GLFW, Dear ImGui, SFML, dan PostgreSQL backend server.
+
+---
+
+## ⚡ Authoritative Netcode Engine (`/netcode-engine`)
+
+Sistem sinkronisasi multiplayer kompetitif dengan tick rate server 20 Hz (50 ms):
+- **Client-Side Prediction (CSP)**: Respons instan gerakan karakter tanpa menunggu round-trip latency.
+- **Server Reconciliation**: Koreksi otomatis saat terdeteksi drift deviasi posisi $> 1.5\text{ px}$.
+- **Diagnostic Inspector**: Slider latensi artifisial ($0 - 400\text{ ms}$), packet drop simulator ($0 - 30\%$), dan visualisasi Server Ghost.
+- **Jalankan Netcode Sandbox Engine**:
+  ```bash
+  cd netcode-engine
+  npm install
+  node server/server.js
+  ```
+  Akses di browser: `http://localhost:8085`
 
 ---
 

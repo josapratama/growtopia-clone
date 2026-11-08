@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  sandbox-mmo:
+    build: .
+    container_name: sandbox-mmo
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      - PORT=8085
+      - NODE_ENV=production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+

@@ -1,0 +1,19 @@
+{
+  "name": "sandbox-mmo",
+  "version": "1.0.0",
+  "description": "2D Pixel Multiplayer Sandbox Engine with Authoritative Netcode, Client-Side Prediction & Tilemap Physics",
+  "main": "server/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "keywords": ["multiplayer", "netcode", "client-side-prediction", "sandbox", "mmo", "websocket", "tilemap"],
+  "author": "Josa Pratama",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1",
+    "ws": "^8.18.0"
+  }
+}
+

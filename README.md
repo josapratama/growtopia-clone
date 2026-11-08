@@ -43,18 +43,20 @@ Anda juga dapat langsung membuka file `web/index.html` di Google Chrome / browse
 ## 🎮 Fitur-Fitur Lengkap yang Telah Diimplementasikan
 
 ### 1. Sistem Pertanian & Kawin Silang Bibit (*Farming & Splicing System*)
-- **Penanaman Bibit:** Tanam Dirt Seed, Rock Seed, Cave Seed, Wood Seed, Lava Seed, dll. di atas tanah.
+- **Penanaman Bibit:** Tanam Dirt Seed, Rock Seed, Cave Seed, Wood Seed, Lava Seed, Door Seed, Magma Seed, dll. di atas tanah.
 - **Fase Pertumbuhan Pohon (3 Tahap Visual):**
   1. *Sprout:* Tunas kecil hijau.
   2. *Sapling:* Pohon muda dengan dedaunan sesuai warna jenis bibit.
   3. *Mature Tree:* Pohon berbuah matang dengan efek kilauan (*sparkle*).
-- **Panen (*Harvesting*):** Memukul pohon matang menjatuhkan blok, bibit baru, dan Gems!
-- **Splicing (Kawin Silang Bibit):** Tanam bibit B di atas pohon bibit A untuk menghasilkan jenis tanaman baru:
+- **Panen (*Harvesting*):** Memukul pohon matang menjatuhkan blok hasil, bibit baru, dan Gems!
+- **Splicing (Kawin Silang Bibit):** Tanam bibit B di atas pohon bibit A untuk menghasilkan jenis bibit dan pohon baru:
   - `Dirt Seed` + `Rock Seed` = **`Lava Seed`**
-  - `Dirt Seed` + `Cave Seed` = **`Door`**
+  - `Dirt Seed` + `Cave Seed` = **`Door Seed`** *(Fixed & yields White Door upon harvest)*
   - `Dirt Seed` + `Lava Seed` = **`Wood Seed`**
   - `Wood Seed` + `Dirt Seed` = **`Platform Seed`**
   - `Rock Seed` + `Wood Seed` = **`Brick Seed`**
+  - `Lava Seed` + `Brick Seed` = **`Magma Seed`**
+  - `Lava Seed` + `Obsidian Seed` = **`Crimson Jetpack`**
 
 ### 2. Sistem Kunci Dunia (*World Lock & Area Protection*)
 - **World Lock (WL):** Mengklaim kepemilikan seluruh world untuk Anda.
@@ -65,9 +67,19 @@ Anda juga dapat langsung membuka file `web/index.html` di Google Chrome / browse
   - Mengambil kembali World Lock (*Break Lock*).
 - **Indikator Visual:** Gembok emas dengan animasi kilauan dan banner status kepemilikan di HUD atas (`🔒 Locked by [Owner]` / `🔓 Public`).
 
-### 3. Sistem Drop Barang & Fisika Mengapung (*Item Drops & Physics*)
-- **Drop Barang:** Klik item di tas atau ketik `/drop <jumlah>` untuk melempar item/gems ke lantai world.
-- **Fisika Real-time:** Item yang dijatuhkan memantul secara natural dan mengapung (*bobbing effect*) di atas permukaan tanah.
+### 3. Sistem Drop Barang & Fisika Lemparan (*Item Drops & Physics*)
+- **Directional Throw Physics:** Item yang dijatuhkan via `/drop <qty>` atau modal tas memiliki kecepatan lempar horizontal ke arah hadap pemain beserta pantulan lantai natural.
+- **Dropper Pickup Delay:** Perlindungan anti auto-sedot selama 3 detik bagi pelempar agar tidak langsung tersedot kembali secara instan, sementara pemain lain dapat mengambilnya setelah 1 detik.
+- **Trash & Gem Recycling (`/trash <qty>`):** Daur ulang item sampah menjadi Gems langsung dari tombol modal tas atau perintah `/trash`.
+
+### 4. Sistem Perdagangan Aman 2-Langkah (*2-Step Secure Trade*)
+- **Anti Duplication & Inventory Validation:** Menjamin ketersediaan item di tas sebelum *Accept* dan *Confirm*.
+- **Kontrol Antarmuka Lengkap:** Tombol *Accept Offer* dan *Confirm Trade* terintegrasi penuh secara realtime antar pemain.
+
+### 5. Perlengkapan & Mobilitas Baru
+- **Crimson Jetpack:** Perlengkapan punggung dengan tenaga roket ganda untuk lompatan tinggi, partikel asap, dan *sustained gliding*.
+- **Golden Pickaxe:** Alat tambang emas dengan kecepatan menghancurkan blok 3x lipat dibanding pukulan tinju.
+- **White Door & Respawn Sync:** Perbaikan sinkronisasi warp pintu world dan perintah `/respawn` / `/kill`.
 - **Auto-Pickup:** Pemain yang mendekati item otomatis mengambilnya dengan efek suara lonceng.
 
 ### 4. Sistem Perdagangan Aman (*Secure 2-Step Trade System*)

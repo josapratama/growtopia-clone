@@ -22,7 +22,7 @@ export const ITEMS = {
   PLATFORM: { id: 5, name: "Wood Platform", type: "platform", icon: "🪵", color: "#b45309", hits: 2, solid: true, isPlatform: true, seedId: 19, xp: 6 },
   LAVA: { id: 6, name: "Lava", type: "block", icon: "🔥", color: "#ef4444", hits: 5, solid: true, isHazard: true, seedId: 17, xp: 12 },
   ROCK: { id: 7, name: "Rock", type: "block", icon: "🪨", color: "#78716c", hits: 6, solid: true, seedId: 14, xp: 10 },
-  DOOR: { id: 8, name: "White Door", type: "door", icon: "🚪", color: "#f8fafc", hits: 10, solid: false, xp: 15 },
+  DOOR: { id: 8, name: "White Door", type: "door", icon: "🚪", color: "#f8fafc", hits: 10, solid: false, seedId: 35, xp: 15 },
   BEDROCK: { id: 10, name: "Bedrock", type: "block", icon: "🧱", color: "#1c1917", hits: 99999, solid: true, xp: 0 },
   BRICK: { id: 11, name: "Brick", type: "block", icon: "🧱", color: "#b91c1c", hits: 4, solid: true, seedId: 18, xp: 10 },
   WOOD: { id: 12, name: "Wood Block", type: "block", icon: "🪵", color: "#78350f", hits: 3, solid: true, seedId: 16, xp: 7 },
@@ -31,6 +31,7 @@ export const ITEMS = {
   OBSIDIAN: { id: 23, name: "Obsidian", type: "block", icon: "🟣", color: "#1e1b4b", hits: 8, solid: true, seedId: 27, xp: 20 },
   GLASS: { id: 24, name: "Glass Window", type: "block", icon: "🪟", color: "#a5f3fc", hits: 2, solid: true, seedId: 28, xp: 6 },
   MUSHROOM: { id: 25, name: "Mushroom Block", type: "block", icon: "🍄", color: "#f43f5e", hits: 3, solid: true, seedId: 29, xp: 9 },
+  MAGMA: { id: 38, name: "Magma Block", type: "block", icon: "🌋", color: "#dc2626", hits: 4, solid: true, seedId: 39, xp: 14 },
 
   // Background Wallpapers
   DIRT_BG: { id: 40, name: "Dirt Background", type: "background", icon: "🟫", color: "#542a0c", hits: 2, solid: false, xp: 4 },
@@ -55,6 +56,8 @@ export const ITEMS = {
   SEED_OBSIDIAN: { id: 27, name: "Obsidian Seed", type: "seed", icon: "🔮", color: "#6366f1", growsInto: 23, growTime: 45 },
   SEED_GLASS: { id: 28, name: "Glass Seed", type: "seed", icon: "💎", color: "#38bdf8", growsInto: 24, growTime: 18 },
   SEED_MUSHROOM: { id: 29, name: "Mushroom Seed", type: "seed", icon: "🍄", color: "#fda4af", growsInto: 25, growTime: 24 },
+  SEED_DOOR: { id: 35, name: "Door Seed", type: "seed", icon: "🌱🚪", color: "#f8fafc", growsInto: 8, growTime: 20 },
+  SEED_MAGMA: { id: 39, name: "Magma Seed", type: "seed", icon: "🔥🌰", color: "#ea580c", growsInto: 38, growTime: 25 },
 
   // Locks
   WORLD_LOCK: { id: 9, name: "World Lock", type: "lock", icon: "🔒", color: "#facc15", desc: "Locks the entire world for you and your friends!" },
@@ -67,14 +70,16 @@ export const ITEMS = {
   ROYAL_ROBE: { id: 32, name: "Royal Robe", type: "wearable", slot: "shirt", icon: "🥋", color: "#7c3aed", desc: "A royal velvet robe." },
   DEVIL_HORNS: { id: 33, name: "Devil Horns", type: "wearable", slot: "hat", icon: "😈", color: "#dc2626", desc: "Spooky fiery red horns!" },
   NINJA_HOOD: { id: 34, name: "Ninja Hood", type: "wearable", slot: "hat", icon: "🥷", color: "#18181b", desc: "Mysterious assassin ninja mask." },
+  JETPACK: { id: 36, name: "Crimson Jetpack", type: "wearable", slot: "wings", icon: "🚀", color: "#ef4444", desc: "Allows super rocket double jumping and sustained gliding!" },
+  GOLDEN_PICKAXE: { id: 37, name: "Golden Pickaxe", type: "tool", slot: "hand", icon: "⛏️✨", color: "#facc15", desc: "Forged in pure gold! Breaks blocks 3x faster than fists." },
 };
 
 // Splicing Matrix
 export const SPLICING_RECIPES = {
   "3,14": 17, // Dirt Seed + Rock Seed = Lava Seed
   "14,3": 17,
-  "3,15": 8,  // Dirt Seed + Cave Seed = Door
-  "15,3": 8,
+  "3,15": 35, // Dirt Seed + Cave Seed = Door Seed (Fixed)
+  "15,3": 35,
   "3,17": 16, // Dirt Seed + Lava Seed = Wood Seed
   "17,3": 16,
   "14,15": 26,// Rock Seed + Cave Seed = Sign Seed
@@ -89,6 +94,10 @@ export const SPLICING_RECIPES = {
   "19,14": 28,
   "16,15": 29,// Wood Seed + Cave Seed = Mushroom Seed
   "15,16": 29,
+  "17,18": 39,// Lava Seed + Brick Seed = Magma Seed
+  "18,17": 39,
+  "17,27": 36,// Lava Seed + Obsidian Seed = Crimson Jetpack
+  "27,17": 36,
 };
 
 export function getItemById(id) {

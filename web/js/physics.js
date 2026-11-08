@@ -12,6 +12,8 @@ import { sendWs } from "./network.js";
 export function updatePhysics(canvas) {
   const p = state.player;
   const hasAngelWings = state.wearables.wings === ITEMS.ANGEL_WINGS.id;
+  const isJetpack = state.wearables.wings === ITEMS.JETPACK?.id;
+  const hasFlightWearable = hasAngelWings || isJetpack;
 
   // Invulnerability timer
   if (p.invulnTimer > 0) p.invulnTimer--;
@@ -33,19 +35,24 @@ export function updatePhysics(canvas) {
   // Jump logic
   if (state.keys.jump) {
     if (p.grounded) {
-      p.vy = JUMP_FORCE;
+      p.vy = isJetpack ? JUMP_FORCE * 1.1 : JUMP_FORCE;
       p.grounded = false;
-      p.jumpsLeft = hasAngelWings ? 1 : 0;
+      p.jumpsLeft = hasFlightWearable ? 1 : 0;
       sound.jump();
-    } else if (hasAngelWings && p.jumpsLeft > 0 && p.vy > -2) {
-      // Double jump with Angel Wings
-      p.vy = JUMP_FORCE * 0.9;
+      if (isJetpack) addSmoke(p.x + (p.facingRight ? 4 : 20), p.y + 20);
+    } else if (hasFlightWearable && p.jumpsLeft > 0 && p.vy > -2) {
+      // Double jump with Angel Wings or Jetpack
+      p.vy = isJetpack ? JUMP_FORCE * 1.2 : JUMP_FORCE * 0.9;
       p.jumpsLeft--;
       sound.jump();
-    } else if (hasAngelWings && p.vy > 0) {
+      if (isJetpack) addSmoke(p.x + (p.facingRight ? 4 : 20), p.y + 20);
+    } else if (hasFlightWearable && p.vy > 0) {
       // Slow gliding while holding jump
-      p.vy = Math.min(p.vy, 1.8);
+      p.vy = isJetpack ? Math.min(p.vy, 1.2) : Math.min(p.vy, 1.8);
       p.isGliding = true;
+      if (isJetpack && Math.random() < 0.3) {
+        addSmoke(p.x + (p.facingRight ? 4 : 20), p.y + 18);
+      }
     }
   } else {
     p.isGliding = false;

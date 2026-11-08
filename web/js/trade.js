@@ -103,6 +103,82 @@ export function notifyTradeUpdate() {
   });
 }
 
+export function initTradeControls() {
+  const acceptBtn = document.getElementById("btn-trade-accept");
+  if (acceptBtn) {
+    acceptBtn.onclick = () => {
+      if (!state.activeTrade) return;
+
+      // Validate my offered items are still in backpack
+      for (const offered of state.activeTrade.myOffer.items) {
+        const slot = state.backpack.find(b => b.item.id === offered.id);
+        if (!slot || slot.count < offered.count) {
+          showToast(`Cannot accept: You no longer have ${offered.count}x items offered!`);
+          return;
+        }
+      }
+      if (state.gems < (state.activeTrade.myOffer.gems || 0)) {
+        showToast("Cannot accept: Not enough gems!");
+        return;
+      }
+
+      sendWs({
+        type: "TRADE_ACCEPT",
+        tradeId: state.activeTrade.id,
+      });
+      state.activeTrade.myOffer.accepted = true;
+      const myStatusEl = document.getElementById("my-trade-status");
+      if (myStatusEl) myStatusEl.innerText = "✅ Offer Locked (Accepted)";
+      acceptBtn.disabled = true;
+      showToast("Offer accepted! Waiting for partner...");
+    };
+  }
+
+  const confirmBtn = document.getElementById("btn-trade-confirm");
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      if (!state.activeTrade) return;
+
+      // Final validation before confirming
+      for (const offered of state.activeTrade.myOffer.items) {
+        const slot = state.backpack.find(b => b.item.id === offered.id);
+        if (!slot || slot.count < offered.count) {
+          showToast(`Cannot confirm: You no longer have ${offered.count}x items offered!`);
+          return;
+        }
+      }
+
+      confirmBtn.disabled = true;
+      confirmBtn.innerText = "Processing...";
+      sendWs({
+        type: "TRADE_CONFIRM",
+        tradeId: state.activeTrade.id,
+      });
+      showToast("Trade confirmed!");
+    };
+  }
+
+  const cancelBtn = document.getElementById("btn-trade-cancel");
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      if (state.activeTrade) {
+        sendWs({ type: "TRADE_CANCEL", tradeId: state.activeTrade.id });
+      }
+      closeTradeModal();
+    };
+  }
+
+  const closeBtn = document.getElementById("trade-close");
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      if (state.activeTrade) {
+        sendWs({ type: "TRADE_CANCEL", tradeId: state.activeTrade.id });
+      }
+      closeTradeModal();
+    };
+  }
+}
+
 export function syncTradeUI(trade) {
   const isA = trade.userA === state.username;
   const myData = isA ? trade.offerA : trade.offerB;
@@ -112,6 +188,7 @@ export function syncTradeUI(trade) {
   const partnerItemsEl = document.getElementById("partner-trade-items");
   const myStatusEl = document.getElementById("my-trade-status");
   const partnerStatusEl = document.getElementById("partner-trade-status");
+  const acceptBtn = document.getElementById("btn-trade-accept");
   const confirmBtn = document.getElementById("btn-trade-confirm");
 
   if (partnerGemsEl) partnerGemsEl.innerText = partnerData.gems || 0;
@@ -130,7 +207,11 @@ export function syncTradeUI(trade) {
   }
 
   if (myStatusEl) myStatusEl.innerText = myData.accepted ? "✅ Offer Locked" : "✏️ Editing Offer";
-  if (partnerStatusEl) partnerStatusEl.innerText = partnerData.accepted ? "✅ Offer Locked" : "Waiting for partner...";
+  if (partnerStatusEl) partnerStatusEl.innerText = partnerData.accepted ? "✅ Partner Locked Offer" : "Waiting for partner...";
+
+  if (acceptBtn) {
+    acceptBtn.disabled = myData.accepted;
+  }
 
   if (confirmBtn) {
     if (myData.accepted && partnerData.accepted) {
@@ -138,6 +219,7 @@ export function syncTradeUI(trade) {
       confirmBtn.innerText = "Confirm Trade";
     } else {
       confirmBtn.disabled = true;
+      confirmBtn.innerText = "Confirm Trade";
     }
   }
 }
@@ -147,12 +229,15 @@ export function finalizeTrade(trade) {
   const myOffer = isA ? trade.offerA : trade.offerB;
   const partnerOffer = isA ? trade.offerB : trade.offerA;
 
-  // Deduct my offered items
+  // Deduct my offered items defensively
   myOffer.items.forEach(i => {
     const idx = state.backpack.findIndex(b => b.item.id === i.id);
-    if (idx !== -1) consumeFromBackpack(idx, i.count);
+    if (idx !== -1) {
+      const deductCount = Math.min(i.count, state.backpack[idx].count);
+      consumeFromBackpack(idx, deductCount);
+    }
   });
-  state.gems -= myOffer.gems || 0;
+  state.gems = Math.max(0, state.gems - (myOffer.gems || 0));
 
   // Add partner's offered items
   partnerOffer.items.forEach(i => {

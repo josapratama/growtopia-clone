@@ -16,7 +16,7 @@ export function handleSlashCommand(commandText) {
 
   switch (cmd) {
     case "/help":
-      addChat("Help", "Commands: /help, /me, /respawn, /who, /drop <qty>, /access <name>, /weather <type>, /kick <name>, /rules, /clear");
+      addChat("Help", "Commands: /help, /me, /respawn, /kill, /trash <qty>, /drop <qty>, /who, /access <name>, /weather <type>, /kick <name>, /rules, /clear");
       break;
 
     case "/me": {
@@ -38,6 +38,36 @@ export function handleSlashCommand(commandText) {
       p.vy = 0;
       sound.respawn();
       showToast("Respawned at White Door.");
+      sendWs({
+        type: "MOVE",
+        x: p.x,
+        y: p.y,
+        vx: 0,
+        vy: 0,
+        facingRight: p.facingRight,
+      });
+      break;
+    }
+
+    case "/trash": {
+      const qty = parseInt(arg1) || 1;
+      const cur = state.backpack[state.selectedSlot];
+      if (!cur) {
+        showToast("No item selected in backpack to trash!");
+        return;
+      }
+      if (cur.item.type === "tool") {
+        showToast("Cannot trash permanent tools!");
+        return;
+      }
+      const actual = Math.min(qty, cur.count);
+      consumeFromBackpack(state.selectedSlot, actual);
+      const recycledGems = Math.max(1, Math.floor(actual / 4));
+      state.gems += recycledGems;
+      document.getElementById("hud-gems").innerText = state.gems;
+      sound.gem();
+      showToast(`Recycled ${cur.item.name} x${actual} into +${recycledGems} Gems!`);
+      addChat("Recycle", `Trashed ${cur.item.name} x${actual} and received +${recycledGems} Gems 💎.`);
       break;
     }
 
@@ -65,7 +95,8 @@ export function handleSlashCommand(commandText) {
       if (cur && cur.item.type !== "tool") {
         const actual = Math.min(qty, cur.count);
         consumeFromBackpack(state.selectedSlot, actual);
-        spawnDroppedItem(cur.item.id, actual, state.player.x + 12, state.player.y + 12);
+        const throwVx = (state.player.facingRight ? 1 : -1) * 4.5;
+        spawnDroppedItem(cur.item.id, actual, state.player.x + 12, state.player.y + 12, throwVx, -4, state.username);
         showToast(`Dropped ${cur.item.name} x${actual}`);
       }
       break;

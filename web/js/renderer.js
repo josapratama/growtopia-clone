@@ -356,7 +356,7 @@ function drawPlayerSprite(ctx, x, y, facingRight, punching, wearables, name, isL
   ctx.translate(Math.round(x + 12), Math.round(y + 15));
   if (!facingRight) ctx.scale(-1, 1);
 
-  // 1. Wearable: Angel Wings
+  // 1. Wearable: Wings / Jetpack
   if (wearables && wearables.wings === ITEMS.ANGEL_WINGS.id) {
     const flap = Math.sin(Date.now() * 0.012) * 4;
     ctx.fillStyle = "#f8fafc";
@@ -367,6 +367,18 @@ function drawPlayerSprite(ctx, x, y, facingRight, punching, wearables, name, isL
     ctx.ellipse(-14, -6 + flap, 12, 6, -0.4, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
+  } else if (wearables && wearables.wings === ITEMS.JETPACK?.id) {
+    // Crimson Jetpack
+    ctx.fillStyle = "#dc2626";
+    ctx.fillRect(-14, -4, 6, 15);
+    ctx.fillStyle = "#475569";
+    ctx.fillRect(-13, 11, 4, 3);
+    // Thruster flame
+    const flameH = 3 + Math.floor(Math.random() * 5);
+    ctx.fillStyle = "#f97316";
+    ctx.fillRect(-13, 14, 4, flameH);
+    ctx.fillStyle = "#facc15";
+    ctx.fillRect(-12, 14, 2, Math.max(1, flameH - 2));
   }
 
   // 2. Torso & Shirt
@@ -435,19 +447,23 @@ function drawPlayerSprite(ctx, x, y, facingRight, punching, wearables, name, isL
   ctx.fillStyle = state.player.skinColor;
   if (punching) {
     ctx.fillRect(6, -2, 12, 6);
-    // Draw Pickaxe in hand if equipped
-    if (wearables && wearables.hand === ITEMS.PICKAXE.id) {
+    // Draw Pickaxe / Golden Pickaxe in hand if equipped
+    const isGold = wearables && wearables.hand === ITEMS.GOLDEN_PICKAXE?.id;
+    const isNormal = wearables && wearables.hand === ITEMS.PICKAXE.id;
+    if (isGold || isNormal) {
       ctx.fillStyle = "#78350f";
       ctx.fillRect(14, -8, 3, 14);
-      ctx.fillStyle = "#94a3b8";
+      ctx.fillStyle = isGold ? "#facc15" : "#94a3b8";
       ctx.fillRect(11, -11, 9, 3);
     }
   } else {
     ctx.fillRect(3, -2, 5, 10);
-    if (wearables && wearables.hand === ITEMS.PICKAXE.id) {
+    const isGold = wearables && wearables.hand === ITEMS.GOLDEN_PICKAXE?.id;
+    const isNormal = wearables && wearables.hand === ITEMS.PICKAXE.id;
+    if (isGold || isNormal) {
       ctx.fillStyle = "#78350f";
       ctx.fillRect(4, 2, 3, 12);
-      ctx.fillStyle = "#94a3b8";
+      ctx.fillStyle = isGold ? "#facc15" : "#94a3b8";
       ctx.fillRect(1, 0, 9, 3);
     }
   }

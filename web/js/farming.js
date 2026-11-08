@@ -99,7 +99,11 @@ export function handleHarvestTree(tileX, tileY, treeIdx) {
     addBlockDebris(tileX * BLOCK_SIZE + 16, tileY * BLOCK_SIZE + 16, "#22c55e");
 
     const seedItem = getItemById(tree.seedId);
-    const produceId = seedItem ? seedItem.growsInto : ITEMS.DIRT.id;
+    let produceId = seedItem ? seedItem.growsInto : null;
+    if (!produceId) {
+      if (tree.seedId === ITEMS.DOOR.id) produceId = ITEMS.DOOR.id;
+      else produceId = ITEMS.DIRT.id;
+    }
     const produceItem = getItemById(produceId) || ITEMS.DIRT;
 
     // Drop harvest loot: 1-3 blocks, 1-2 seeds, 2-6 gems!

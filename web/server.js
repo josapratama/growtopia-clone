@@ -637,9 +637,9 @@ wss.on("connection", ws => {
             count: count || 1,
             x: x || 1600,
             y: y || 700,
-            vx: (Math.random() - 0.5) * 4,
-            vy: -4 - Math.random() * 3,
-            droppedBy: username,
+            vx: typeof data.vx === "number" ? data.vx : (Math.random() - 0.5) * 4,
+            vy: typeof data.vy === "number" ? data.vy : -4 - Math.random() * 3,
+            droppedBy: data.droppedBy || username,
             droppedAt: Date.now(),
           };
 

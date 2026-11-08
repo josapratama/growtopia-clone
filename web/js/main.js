@@ -12,7 +12,7 @@ import { handleSeedPlanting, handleHarvestTree } from "./farming.js";
 import { handleLockPlacement, canModifyTile } from "./locks.js";
 import { updateDroppedItems, spawnDroppedItem, consumeFromBackpack } from "./items.js";
 import { updateParticles, addBlockDebris } from "./particles.js";
-import { startTradeWith } from "./trade.js";
+import { startTradeWith, initTradeControls } from "./trade.js";
 import { handleSlashCommand } from "./commands.js";
 import { initWebSocket, sendWs } from "./network.js";
 import {
@@ -131,8 +131,8 @@ function handleBlockClick(tileX, tileY) {
     return;
   }
 
-  // 2. Fist / Punch / Pickaxe: Break Block or Harvest Tree
-  if (item.id === ITEMS.FIST.id || item.id === ITEMS.PICKAXE.id) {
+  // 2. Fist / Punch / Pickaxe / Golden Pickaxe: Break Block or Harvest Tree
+  if (item.id === ITEMS.FIST.id || item.id === ITEMS.PICKAXE.id || item.id === ITEMS.GOLDEN_PICKAXE?.id) {
     handlePunchClick(tileX, tileY, item);
     return;
   }
@@ -170,9 +170,10 @@ function handlePunchClick(tileX, tileY, toolItem) {
     return;
   }
 
-  // Determine hit power bonus (Pickaxe breaks faster)
+  // Determine hit power bonus (Pickaxe breaks faster, Golden Pickaxe even faster!)
+  const isGoldenPickaxe = toolItem?.id === ITEMS.GOLDEN_PICKAXE?.id || state.wearables.hand === ITEMS.GOLDEN_PICKAXE?.id;
   const isPickaxe = toolItem?.id === ITEMS.PICKAXE.id || state.wearables.hand === ITEMS.PICKAXE.id;
-  const hitDamage = isPickaxe ? 2 : 1;
+  const hitDamage = isGoldenPickaxe ? 3 : (isPickaxe ? 2 : 1);
 
   // 1. Check Foreground Block
   const fgBlockId = state.world.fg[tileY]?.[tileX];
@@ -651,20 +652,39 @@ function initInputListeners() {
       const actual = Math.min(dropCount, b.count);
 
       consumeFromBackpack(state.activeItemActionIdx, actual);
-      spawnDroppedItem(b.item.id, actual, state.player.x + 12, state.player.y + 12);
+      const throwVx = (state.player.facingRight ? 1 : -1) * 4.5;
+      spawnDroppedItem(b.item.id, actual, state.player.x + 12, state.player.y + 12, throwVx, -4, state.username);
       closeItemActionModal();
     }
   };
 
-  // Trade Modal
-  document.getElementById("trade-close").onclick = () => {
-    if (state.activeTrade) sendWs({ type: "TRADE_CANCEL", tradeId: state.activeTrade.id });
-    hideModal("modal-trade");
-  };
-  document.getElementById("btn-trade-cancel").onclick = () => {
-    if (state.activeTrade) sendWs({ type: "TRADE_CANCEL", tradeId: state.activeTrade.id });
-    hideModal("modal-trade");
-  };
+  const trashBtn = document.getElementById("btn-trash-item");
+  if (trashBtn) {
+    trashBtn.onclick = () => {
+      if (state.activeItemActionIdx !== null) {
+        const b = state.backpack[state.activeItemActionIdx];
+        if (b.item.type === "tool") {
+          showToast("Cannot trash permanent tools!");
+          return;
+        }
+        const slider = document.getElementById("drop-qty-slider");
+        const trashCount = parseInt(slider.value) || 1;
+        const actual = Math.min(trashCount, b.count);
+
+        consumeFromBackpack(state.activeItemActionIdx, actual);
+        const recycledGems = Math.max(1, Math.floor(actual / 4));
+        state.gems += recycledGems;
+        document.getElementById("hud-gems").innerText = state.gems;
+        sound.gem();
+        showToast(`Recycled ${b.item.name} x${actual} into +${recycledGems} Gems!`);
+        addChat("Recycle", `Recycled ${b.item.name} x${actual} into +${recycledGems} Gems 💎.`);
+        closeItemActionModal();
+      }
+    };
+  }
+
+  // Trade Modal Controls
+  initTradeControls();
 
   // Mobile Touch Controls
   const setupTouch = (id, key) => {
